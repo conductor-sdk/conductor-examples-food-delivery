@@ -1,13 +1,12 @@
 package io.orkes.example.saga.service;
 
 import io.orkes.example.saga.dao.ShipmentDAO;
-import io.orkes.example.saga.pojos.Order;
+import io.orkes.example.saga.pojos.Driver;
 import io.orkes.example.saga.pojos.Shipment;
 import io.orkes.example.saga.pojos.ShippingRequest;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Random;
-import java.util.UUID;
 
 @Slf4j
 public class ShipmentService {
@@ -15,20 +14,34 @@ public class ShipmentService {
     private static final ShipmentDAO shipmentDAO = new ShipmentDAO("jdbc:sqlite:food_delivery.db");
 
     public static int createShipment(ShippingRequest shippingRequest) {
-        int driverId = findDriver();
+        String orderId = shippingRequest.getOrderId();
 
         Shipment shipment = new Shipment();
-        shipment.setOrderId(shippingRequest.getOrderId());
-        shipment.setDriverId(driverId);
+        shipment.setOrderId(orderId);
         shipment.setDeliveryAddress(shippingRequest.getDeliveryAddress());
-        shipment.setDeliveryInstructions(shipment.getDeliveryInstructions());
+        shipment.setDeliveryInstructions(shippingRequest.getDeliveryInstructions());
+
+        int driverId = findDriver();
+        shipment.setDriverId(driverId);
 
         if (!shipmentDAO.insertShipment(shipment)) {
-            log.error("Shipment creation for order {} failed.", shippingRequest.getOrderId());
+            log.error("Shipment creation for order {} failed.", orderId);
             return 0;
         }
 
-        log.info("Assigned driver {} to order with id: {}", driverId, shippingRequest.getOrderId());
+        Driver driver = new Driver();
+        driver.setName("");
+        shipmentDAO.readDriver(driverId, driver);
+
+        if (driver.getName().isBlank()) {
+            log.error("Shipment creation for order {} failed as driver in the area is not available.", orderId);
+            shipmentDAO.cancelShipment(orderId);
+            return 0;
+        }
+        else {
+            log.info("Assigned driver {} to order with id: {}", driverId, orderId);
+            shipmentDAO.confirmShipment(orderId);
+        }
 
         return driverId;
     }
@@ -41,8 +54,8 @@ public class ShipmentService {
         Random random = new Random();
         int driverId = 0;
         int counter = 0;
-        while (counter < 5) {
-            driverId = random.nextInt(5);
+        while (counter < 10) {
+            driverId = random.nextInt(4);
             if(driverId !=0) break;
             counter += 1;
         }

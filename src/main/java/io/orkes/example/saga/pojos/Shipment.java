@@ -6,7 +6,7 @@ import lombok.Data;
 public class Shipment {
     public enum Status {
         SCHEDULED,
-        FAILED,
+        CONFIRMED,
         DELIVERED,
         CANCELED
     }

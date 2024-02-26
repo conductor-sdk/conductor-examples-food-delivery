@@ -1,15 +1,10 @@
 package io.orkes.example.saga.dao;
 
+import io.orkes.example.saga.pojos.Driver;
 import io.orkes.example.saga.pojos.Shipment;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.sql.*;
 import java.util.Date;
-import java.util.TimeZone;
 
 public class ShipmentDAO extends BaseDAO {
 
@@ -37,7 +32,7 @@ public class ShipmentDAO extends BaseDAO {
         }
         return true;
     }
-    public boolean cancelShipment(String orderId) {
+    public void cancelShipment(String orderId) {
         String sql = "UPDATE shipments SET status=? WHERE orderId=?;";
 
         try (Connection conn = this.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -46,8 +41,35 @@ public class ShipmentDAO extends BaseDAO {
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return false;
         }
-        return true;
+    }
+
+    public void confirmShipment(String orderId) {
+        String sql = "UPDATE shipments SET status=? WHERE orderId=?;";
+
+        try (Connection conn = this.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, Shipment.Status.CONFIRMED.name());
+            pstmt.setString(2, orderId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void readDriver(int driverId, Driver driver) {
+        String sql = "SELECT name, contact FROM drivers WHERE id = ?";
+
+        try (Connection conn = this.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, driverId);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                driver.setId(driverId);
+                driver.setName(rs.getString("name"));
+                driver.setContact(rs.getString("contact"));
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

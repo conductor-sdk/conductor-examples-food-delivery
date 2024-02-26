@@ -1,17 +1,9 @@
 package io.orkes.example.saga.dao;
 
-import io.orkes.example.saga.pojos.Order;
 import io.orkes.example.saga.pojos.Payment;
-import io.orkes.example.saga.pojos.PaymentMethod;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.sql.*;
 import java.util.Date;
-import java.util.TimeZone;
 
 public class PaymentsDAO extends BaseDAO {
 
@@ -20,10 +12,8 @@ public class PaymentsDAO extends BaseDAO {
     }
 
     public String insertPayment(Payment payment) {
-        TimeZone tz = TimeZone.getTimeZone("UTC");
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
-        df.setTimeZone(tz);
-        String nowAsISO = df.format(new Date());
+        Date date = new Date();
+        Timestamp nowAsTS = new Timestamp(date.getTime());
 
         String sql = "INSERT INTO payments(paymentId, orderId, amount, method, createdAt, status) VALUES(?,?,?,?,?,?);";
 
@@ -32,7 +22,7 @@ public class PaymentsDAO extends BaseDAO {
             pstmt.setString(2, payment.getOrderId());
             pstmt.setDouble(3, payment.getAmount());
             pstmt.setString(4, payment.getPaymentMethod().toString());
-            pstmt.setString(5, nowAsISO);
+            pstmt.setTimestamp(5, nowAsTS);
             pstmt.setString(6, payment.getStatus().name());
             pstmt.executeUpdate();
         } catch (SQLException e) {
