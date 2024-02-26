@@ -32,7 +32,7 @@ public class PaymentsDAO extends BaseDAO {
         return "";
     }
 
-    public String updatePaymentStatus(Payment payment) {
+    public void updatePaymentStatus(Payment payment) {
         String sql = "UPDATE payments SET status=? WHERE paymentId=?;";
 
         try (Connection conn = this.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -41,9 +41,7 @@ public class PaymentsDAO extends BaseDAO {
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return e.getMessage();
         }
-        return "";
     }
 
     public void readPayment(String orderId, Payment payment) {

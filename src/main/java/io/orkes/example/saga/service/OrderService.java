@@ -54,18 +54,6 @@ public class OrderService {
         return order;
     }
 
-//    public static boolean assignDriverToOrder(Order order, int driverId) {
-//        order.setDriverId(driverId);
-//        order.setStatus(Order.Status.ASSIGNED);
-//        return ORDERS_DAO.updateOrder(order);
-//    }
-
-//    public static boolean confirmOrder(Order order) {
-//        order.setStatus(Order.Status.CONFIRMED);
-//        log.info("Confirming order {}", order.getOrderId());
-//        return ORDERS_DAO.updateOrder(order);
-//    }
-//
     public static void cancelOrder(Order order) {
         order.setStatus(Order.Status.CANCELLED);
         log.info("Cancelling order {}", order.getOrderId());

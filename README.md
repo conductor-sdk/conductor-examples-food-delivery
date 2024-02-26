@@ -126,23 +126,29 @@ A successful order creation workflow run will look like this:
 
 #### Triggering the cancellation workflow to simulate rollback of distributed transactions
 
-* Create a booking for rider 3 who doesn't have a payment method seeded.
+* Create an order with invalid payment expiry
 ``` 
 curl --location 'https://play.orkes.io/api/workflow' \
 --header "Content-Type: application/json" \
 --header 'X-Authorization: <JWT Token>' \
 --request POST \
---data '{
-  "name": "cab_service_saga_booking_wf",
-  "version": 1,
-  "input": {
-    "name": "FoodDeliveryWorkflow",
+--data \
+'
+{
+    "name": "cab_service_saga_booking_wf",
     "version": 1,
     "input": {
-      "customerId": 1,
       "address": "350 East 62nd Street, NY 10065",
       "contact": "+1(605)123-5674",
-      "restaurantId": 2,
+      "customerId": 1,
+      "paymentMethod": {
+        "details": {
+          "number": "1234 4567 3325 1345",
+          "cvv": "123",
+          "expiry": "05/2022"
+        },
+        "type": "Credit Card"
+      },
       "foodItems": [
         {
           "item": "Chicken with Broccoli",
@@ -157,25 +163,17 @@ curl --location 'https://play.orkes.io/api/workflow' \
           "quantity": 2
         }
       ],
+      "restaurantId": 2,
       "additionalNotes": [
         "Do not put spice.",
         "Send cutlery."
       ],
-      "deliveryInstructions": "Leave at the door!",
       "paymentAmount": 45.34,
-      "paymentMethod": {
-        "type": "Credit Card",
-        "details": {
-          "number": "1234 4567 3325 1345",
-          "expiry": "05/2023",
-          "cvv": "123"
-        }
-      }
+      "deliveryInstructions": "Leave at the door!"
     }
-  },
-  "taskToDomain": {
-    "*": "saga"
-  }
+    "taskToDomain": {
+        "*": "saga"
+    }
 }
 '
 ```
