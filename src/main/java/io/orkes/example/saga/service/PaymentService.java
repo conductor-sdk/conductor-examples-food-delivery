@@ -42,7 +42,7 @@ public class PaymentService {
         }
 
         // Record final status
-        String err = paymentsDAO.updatePayment(payment);
+        String err = paymentsDAO.updatePaymentStatus(payment);
         if (!err.isEmpty()) {
             payment.setStatus(Payment.Status.FAILED);
         }
@@ -55,7 +55,7 @@ public class PaymentService {
         Payment payment = new Payment();
         paymentsDAO.readPayment(orderId, payment);
         payment.setStatus(Payment.Status.CANCELED);
-        paymentsDAO.updatePayment(payment);
+        paymentsDAO.updatePaymentStatus(payment);
     }
 
     private static boolean makePayment(Payment payment) {

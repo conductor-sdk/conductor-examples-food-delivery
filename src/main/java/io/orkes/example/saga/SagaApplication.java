@@ -23,5 +23,6 @@ public class SagaApplication {
 		db.createTables("orders");
 		db.createTables("inventory");
 		db.createTables("payments");
+		db.createTables("shipments");
 	}
 }

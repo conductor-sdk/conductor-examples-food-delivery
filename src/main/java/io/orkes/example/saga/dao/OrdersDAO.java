@@ -15,9 +15,6 @@ public class OrdersDAO extends BaseDAO {
     }
 
     public String insertOrder(Order order) {
-        TimeZone tz = TimeZone.getTimeZone("UTC");
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
-        df.setTimeZone(tz);
         Date date = new Date();
         Timestamp nowAsTS = new Timestamp(date.getTime());
 

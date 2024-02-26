@@ -6,6 +6,7 @@ import io.orkes.example.saga.pojos.*;
 import io.orkes.example.saga.service.InventoryService;
 import io.orkes.example.saga.service.OrderService;
 import io.orkes.example.saga.service.PaymentService;
+import io.orkes.example.saga.service.ShipmentService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
@@ -78,15 +79,20 @@ public class ConductorWorkers {
 
         return result;
     }
-//
-//    @WorkerTask(value = "confirm_order", threadCount = 2, pollingInterval = 300)
-//    public Map<String, Object> checkForOrderConfirmation(CheckInventoryRequest orderConfirmationReq) {
-//        Map<String, Object> result = new HashMap<>();
-//        Order order = OrderService.getOrder(orderConfirmationReq.getOrderId());
-//        OrderService.confirmOrder(order);
-//        return result;
-//    }
-//
+
+    @WorkerTask(value = "ship_food", threadCount = 2, pollingInterval = 300)
+    public TaskResult shipFoodTask(ShippingRequest shippingRequest) {
+        TaskResult result = new TaskResult();
+        Map<String, Object> output = new HashMap<>();
+        int driverId = ShipmentService.createShipment(shippingRequest);
+        if (driverId != 0) {
+            result.setStatus(TaskResult.Status.COMPLETED);
+        } else {
+            result.setStatus(TaskResult.Status.FAILED);
+        }
+        return result;
+    }
+
     @WorkerTask(value = "notify_driver", threadCount = 2, pollingInterval = 300)
     public Map<String, Object> checkForDriverNotifications(DriverNotificationRequest driverNotificationRequest) {
         Map<String, Object> result = new HashMap<>();
@@ -100,23 +106,23 @@ public class ConductorWorkers {
     }
 //
     @WorkerTask(value = "cancel_payment", threadCount = 2, pollingInterval = 300)
-    public Map<String, Object> cancelPaymentTask(CancelPaymentRequest cancelPaymentRequest) {
+    public Map<String, Object> cancelPaymentTask(CancelRequest cancelRequest) {
         Map<String, Object> result = new HashMap<>();
-        PaymentService.cancelPayment(cancelPaymentRequest.getOrderId());
+        PaymentService.cancelPayment(cancelRequest.getOrderId());
         return result;
     }
-//
-//    @WorkerTask(value = "cancel_driver_assignment", threadCount = 2, pollingInterval = 300)
-//    public Map<String, Object> checkForDriverAssignmentCancellations(CheckInventoryRequest driverCancellationReq) {
-//        Map<String, Object> result = new HashMap<>();
-//        ShipmentService.cancelAssignment(driverCancellationReq.getOrderId());
-//        return result;
-//    }
-//
-    @WorkerTask(value = "cancel_order", threadCount = 2, pollingInterval = 300)
-    public Map<String, Object> cancelOrderTask(CancelOrderRequest cancelOrderRequest) {
+
+    @WorkerTask(value = "cancel_delivery", threadCount = 2, pollingInterval = 300)
+    public Map<String, Object> cancelDeliveryTask(CancelRequest cancelRequest) {
         Map<String, Object> result = new HashMap<>();
-        Order order = OrderService.getOrder(cancelOrderRequest.getOrderId());
+        ShipmentService.cancelDelivery(cancelRequest.getOrderId());
+        return result;
+    }
+
+    @WorkerTask(value = "cancel_order", threadCount = 2, pollingInterval = 300)
+    public Map<String, Object> cancelOrderTask(CancelRequest cancelRequest) {
+        Map<String, Object> result = new HashMap<>();
+        Order order = OrderService.getOrder(cancelRequest.getOrderId());
         OrderService.cancelOrder(order);
         return result;
     }

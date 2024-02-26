@@ -33,26 +33,26 @@ public class BaseDAO {
     public void createTables(String service) {
         switch (service) {
             case "orders":
-                createOrdersTableCreationSqlStmt();
-                createOrderDetailsTableCreationSqlStmt();
-                createCustomerTableCreationSqlStmt();
+                createOrdersTable();
+                createOrderDetailsTable();
+                createCustomerTable();
                 break;
             case "inventory":
-                createRestaurantsTableSqlStmt();
+                createRestaurantsTable();
                 break;
-//            case "shipment":
-//                createDriversTableCreationSqlStmt();
-//                createAssignmentsTableCreationSqlStmt();
-//                break;
+            case "shipments":
+                createDriversTable();
+                createShipmentTable();
+                break;
             case "payments":
-                createPaymentsTableCreationSqlStmt();
+                createPaymentsTable();
                 break;
             default:
                 System.out.println("Service name not recognized");
         }
     }
 
-    private void createOrdersTableCreationSqlStmt() {
+    private void createOrdersTable() {
         if (!tableExists("orders")) {
 
             String sql = "CREATE TABLE orders (\n"
@@ -68,7 +68,7 @@ public class BaseDAO {
         }
     }
 
-    private void createOrderDetailsTableCreationSqlStmt() {
+    private void createOrderDetailsTable() {
         if (!tableExists("orders_details")) {
             String sql = "CREATE TABLE orders_details (\n"
                     + "	orderId text PRIMARY KEY,\n"
@@ -80,7 +80,7 @@ public class BaseDAO {
         }
     }
 
-    private void createCustomerTableCreationSqlStmt() {
+    private void createCustomerTable() {
         if (tableExists("customers")) {
             return;
         }
@@ -96,7 +96,7 @@ public class BaseDAO {
         }
     }
 
-    private void createRestaurantsTableSqlStmt() {
+    private void createRestaurantsTable() {
         if (!tableExists("restaurants")) {
             String sql = "CREATE TABLE restaurants (\n"
                     + "	id integer PRIMARY KEY AUTOINCREMENT,\n"
@@ -112,7 +112,7 @@ public class BaseDAO {
     }
 
 
-    private void createPaymentsTableCreationSqlStmt() {
+    private void createPaymentsTable() {
         if (tableExists("payments")) {
             return;
         }
@@ -129,7 +129,38 @@ public class BaseDAO {
         execute(sql);
     }
 
+    private void createDriversTable() {
+        if (tableExists("drivers")) {
+            return;
+        }
 
+        String sql = "CREATE TABLE drivers (\n"
+                + "	id integer PRIMARY KEY AUTOINCREMENT,\n"
+                + "	name text NOT NULL,\n"
+                + "	contact text\n"
+                + ");";
+
+        if(execute(sql)) {
+            seedDrivers();
+        }
+    }
+    private void createShipmentTable() {
+        if (tableExists("shipments")) {
+            return;
+        }
+
+        String sql = "CREATE TABLE shipments (\n"
+                + "	id integer PRIMARY KEY AUTOINCREMENT,\n"
+                + "	orderId text NOT NULL,\n"
+                + "	driverId number NOT NULL,\n"
+                + "	address text NOT NULL,\n"
+                + "	instructions text,\n"
+                + "	status text NOT NULL,\n"
+                + "	createdAt TIMESTAMP NOT NULL\n"
+                + ");";
+
+        execute(sql);
+    }
 
     private void seedCustomers() {
         String[] queries = {
