@@ -122,7 +122,8 @@ We can use two approaches:
    
 A successful order creation workflow run will look like this:
 
-<img width="452" alt="Screenshot 2023-07-11 at 10 15 15 PM" src="https://github.com/conductor-sdk/conductor-examples-saga-pattern/assets/127052609/4db84807-25c2-42e3-83bd-e15340d19a79">
+![Screenshot 2024-02-26 at 11 38 14 AM](https://github.com/conductor-sdk/conductor-examples-food-delivery/assets/127052609/377549ec-58b0-425c-922b-6318a20b68c8)
+
 
 #### Triggering the cancellation workflow to simulate rollback of distributed transactions
 
