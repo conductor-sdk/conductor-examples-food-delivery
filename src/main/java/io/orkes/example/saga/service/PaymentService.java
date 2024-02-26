@@ -2,10 +2,16 @@ package io.orkes.example.saga.service;
 
 import io.orkes.example.saga.dao.PaymentsDAO;
 import io.orkes.example.saga.pojos.Payment;
+import io.orkes.example.saga.pojos.PaymentDetails;
 import io.orkes.example.saga.pojos.PaymentMethod;
 import io.orkes.example.saga.pojos.PaymentRequest;
 import lombok.extern.slf4j.Slf4j;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
 
 @Slf4j
@@ -21,12 +27,7 @@ public class PaymentService {
         payment.setPaymentId(uuidAsString);
         payment.setOrderId(paymentRequest.getOrderId());
         payment.setAmount(paymentRequest.getAmount());
-
-        PaymentMethod paymentMethod = new PaymentMethod();
-        paymentMethod.setType(paymentRequest.getMethod().getType());
-        paymentMethod.setDetails(paymentRequest.getMethod().getDetails());
-
-        payment.setPaymentMethod(paymentMethod);
+        payment.setPaymentMethod(paymentRequest.getMethod());
         payment.setStatus(Payment.Status.PENDING);
 
         // Check if returned error is non-empty, i.e failure
@@ -38,15 +39,13 @@ public class PaymentService {
         else {
             if(makePayment(payment)) {
                 payment.setStatus(Payment.Status.SUCCESSFUL);
+            } else {
+                payment.setStatus(Payment.Status.FAILED);
             }
         }
 
         // Record final status
-        String err = paymentsDAO.updatePaymentStatus(payment);
-        if (!err.isEmpty()) {
-            payment.setStatus(Payment.Status.FAILED);
-        }
-
+        paymentsDAO.updatePaymentStatus(payment);
         return payment;
     }
 
@@ -59,6 +58,26 @@ public class PaymentService {
     }
 
     private static boolean makePayment(Payment payment) {
+        if (Objects.equals(payment.getPaymentMethod().getType(), "Credit Card")) {
+            PaymentDetails details = payment.getPaymentMethod().getDetails();
+
+            DateFormat dateFormat= new SimpleDateFormat("MM/yyyy");
+            Date expiry = new Date();
+
+            try {
+                expiry = dateFormat.parse(details.getExpiry());
+            } catch (ParseException e) {
+                payment.setErrorMsg("Invalid expiry date:" + details.getExpiry());
+                return false;
+            }
+
+            Date today = new Date();
+            if (today.getTime() > expiry.getTime()) {
+                payment.setErrorMsg("Expired payment method:" + details.getExpiry());
+                return false;
+            }
+
+        }
         // Ideally an async call would be made with a callback
         // But, we're skipping that and assuming payment went through
         return true;

@@ -72,7 +72,7 @@ public class ConductorWorkers {
             result.setStatus(TaskResult.Status.COMPLETED);
         } else {
             output.put("error", payment.getErrorMsg());
-            result.setStatus(TaskResult.Status.FAILED);
+            result.setStatus(TaskResult.Status.FAILED_WITH_TERMINAL_ERROR);
         }
 
         result.setOutputData(output);

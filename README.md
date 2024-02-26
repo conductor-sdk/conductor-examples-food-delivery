@@ -127,23 +127,29 @@ A successful order creation workflow run will look like this:
 
 #### Triggering the cancellation workflow to simulate rollback of distributed transactions
 
-* Create a booking for rider 3 who doesn't have a payment method seeded.
+* Create an order with invalid payment expiry
 ``` 
 curl --location 'https://play.orkes.io/api/workflow' \
 --header "Content-Type: application/json" \
 --header 'X-Authorization: <JWT Token>' \
 --request POST \
---data '{
-  "name": "cab_service_saga_booking_wf",
-  "version": 1,
-  "input": {
-    "name": "FoodDeliveryWorkflow",
+--data \
+'
+{
+    "name": "cab_service_saga_booking_wf",
     "version": 1,
     "input": {
-      "customerId": 1,
       "address": "350 East 62nd Street, NY 10065",
       "contact": "+1(605)123-5674",
-      "restaurantId": 2,
+      "customerId": 1,
+      "paymentMethod": {
+        "details": {
+          "number": "1234 4567 3325 1345",
+          "cvv": "123",
+          "expiry": "05/2022"
+        },
+        "type": "Credit Card"
+      },
       "foodItems": [
         {
           "item": "Chicken with Broccoli",
@@ -158,25 +164,17 @@ curl --location 'https://play.orkes.io/api/workflow' \
           "quantity": 2
         }
       ],
+      "restaurantId": 2,
       "additionalNotes": [
         "Do not put spice.",
         "Send cutlery."
       ],
-      "deliveryInstructions": "Leave at the door!",
       "paymentAmount": 45.34,
-      "paymentMethod": {
-        "type": "Credit Card",
-        "details": {
-          "number": "1234 4567 3325 1345",
-          "expiry": "05/2023",
-          "cvv": "123"
-        }
-      }
+      "deliveryInstructions": "Leave at the door!"
     }
-  },
-  "taskToDomain": {
-    "*": "saga"
-  }
+    "taskToDomain": {
+        "*": "saga"
+    }
 }
 '
 ```
@@ -184,14 +182,16 @@ curl --location 'https://play.orkes.io/api/workflow' \
 * This will cause the workflow to fail and trigger the cancellation workflow.
 * Failed workflow run will look like this:
 
-    <img width="445" alt="Screenshot 2023-07-12 at 12 14 29 AM" src="https://github.com/conductor-sdk/conductor-examples-saga-pattern/assets/127052609/06c6ec04-1784-4916-ba63-0c03e5af43bc">
+![Screenshot 2024-02-26 at 1 14 02 PM](https://github.com/conductor-sdk/conductor-examples-food-delivery/assets/127052609/6078320f-f4d6-406e-98b9-7df110c70cb3)
+
 
 
 * A cancellation workflow run will look like this:
 
-    <img width="450" alt="Screenshot 2023-07-12 at 12 15 30 AM" src="https://github.com/conductor-sdk/conductor-examples-saga-pattern/assets/127052609/37406ad6-f3e8-426d-898e-fe42768fc6d6">
+![Screenshot 2024-02-26 at 1 15 07 PM](https://github.com/conductor-sdk/conductor-examples-food-delivery/assets/127052609/68c15035-82c1-4415-b502-93217ce40c80)
+
 
 * In the above workflow diagram, the simulated distributed rollback can be seen. The rollback sequence in case of failure occurring while payment processing is as follows:
-  1. Shipment assignment is cancelled the Shipment Service
+  1. Shipment is cancelled in the Shipment Service
   2. Payment is cancelled in the Payment Service
   3. Order is cancelled in the Order Service
