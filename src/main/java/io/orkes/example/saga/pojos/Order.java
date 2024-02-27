@@ -15,7 +15,7 @@ public class Order {
     }
 
     private String orderId;
-    private int customerId;
+    private Customer customer;
     private int restaurantId;
     private String deliveryAddress;
     private long createdAt;

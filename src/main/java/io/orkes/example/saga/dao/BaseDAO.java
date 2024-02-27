@@ -87,6 +87,7 @@ public class BaseDAO {
 
         String sql = "CREATE TABLE customers (\n"
                 + "	id integer PRIMARY KEY AUTOINCREMENT,\n"
+                + "	email text NOT NULL,\n"
                 + "	name text NOT NULL,\n"
                 + "	contact text\n"
                 + ");";
@@ -164,9 +165,9 @@ public class BaseDAO {
 
     private void seedCustomers() {
         String[] queries = {
-                "INSERT INTO customers(name,contact) VALUES('John Smith','+12126781345');",
-                "INSERT INTO customers(name,contact) VALUES('Mike Ross','+15466711147');",
-                "INSERT INTO customers(name,contact) VALUES('Martha Williams','+12790581941');"
+                "INSERT INTO customers(email, name, contact) VALUES('John Smith','john.smith@example.com','+12126781345');",
+                "INSERT INTO customers(email, name, contact) VALUES('Mike Ross','mike.ross@example.com','+15466711147');",
+                "INSERT INTO customers(email, name, contact) VALUES('Martha Williams','martha.williams@example.com','+12790581941');"
         };
 
         for (String query : queries) {
