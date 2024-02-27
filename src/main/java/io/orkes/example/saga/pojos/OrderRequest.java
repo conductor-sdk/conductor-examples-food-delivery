@@ -7,7 +7,9 @@ import java.util.ArrayList;
 @Data
 public class OrderRequest {
     private String OrderRequestId;
-    private int customerId;
+    private String customerEmail;
+    private String customerName;
+    private String customerContact;
     private int restaurantId;
     private ArrayList<FoodItem> items;
     private ArrayList<String> notes;

@@ -1,6 +1,7 @@
 package io.orkes.example.saga.service;
 
 import io.orkes.example.saga.dao.OrdersDAO;
+import io.orkes.example.saga.pojos.Customer;
 import io.orkes.example.saga.pojos.Order;
 import io.orkes.example.saga.pojos.OrderDetails;
 import io.orkes.example.saga.pojos.OrderRequest;
@@ -23,7 +24,16 @@ public class OrderService {
 
         Order order = new Order();
         order.setOrderId(uuidAsString);
-        order.setCustomerId(orderRequest.getCustomerId());
+
+        Customer customer = new Customer();
+        customer.setEmail(orderRequest.getCustomerEmail());
+        customer.setName(orderRequest.getCustomerName());
+        customer.setContact(orderRequest.getCustomerContact());
+        customer.setId(ORDERS_DAO.insertCustomer(customer));
+
+        log.info("Upsert customer record in DB with id: {}", customer.getId());
+
+        order.setCustomer(customer);
         order.setRestaurantId(orderRequest.getRestaurantId());
         order.setDeliveryAddress(orderRequest.getDeliveryAddress());
         order.setStatus(Order.Status.PENDING);

@@ -19,7 +19,6 @@ public class WorkflowService {
 
     private final WorkflowClient workflowClient;
     private final Environment environment;
-    private final String TASK_DOMAIN_PROPERTY = "conductor.worker.all.domain";
 
     public Map<String, Object> startFoodDeliveryWorkflow(OrderRequest orderRequest) {
         UUID uuid = UUID.randomUUID();
@@ -27,10 +26,11 @@ public class WorkflowService {
         orderRequest.setOrderRequestId(orderRequestId);
 
         StartWorkflowRequest request = new StartWorkflowRequest();
-        request.setName("cab_service_saga_order_wf");
+        request.setName("FoodDeliveryWorkflow");
         request.setVersion(1);
         request.setCorrelationId(orderRequestId);
 
+        String TASK_DOMAIN_PROPERTY = "conductor.worker.all.domain";
         String domain = environment.getProperty(TASK_DOMAIN_PROPERTY, String.class, "");
 
         if (!domain.isEmpty()) {
@@ -40,7 +40,9 @@ public class WorkflowService {
         }
 
         Map<String, Object> inputData = new HashMap<>();
-        inputData.put("customerId", orderRequest.getCustomerId());
+        inputData.put("customerEmail", orderRequest.getCustomerEmail());
+        inputData.put("customerName", orderRequest.getCustomerName());
+        inputData.put("customerContact", orderRequest.getCustomerContact());
         inputData.put("restaurantId", orderRequest.getRestaurantId());
         inputData.put("address", orderRequest.getDeliveryAddress());
         inputData.put("deliveryInstructions", orderRequest.getDeliveryInstructions());
