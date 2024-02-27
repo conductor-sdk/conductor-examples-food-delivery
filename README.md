@@ -136,7 +136,7 @@ curl --location 'https://play.orkes.io/api/workflow' \
 --data \
 '
 {
-    "name": "cab_service_saga_booking_wf",
+    "name": "FoodDeliveryWorkflow",
     "version": 1,
     "input": {
       "address": "350 East 62nd Street, NY 10065",
