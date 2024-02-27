@@ -1,5 +1,6 @@
 package io.orkes.example.saga.controller;
 
+import io.orkes.example.saga.pojos.FoodDeliveryRequest;
 import io.orkes.example.saga.pojos.OrderRequest;
 import io.orkes.example.saga.service.WorkflowService;
 
@@ -20,8 +21,7 @@ public class OrderServiceController {
     private final WorkflowService workflowService;
 
     @PostMapping(value = "/triggerFoodDeliveryFlow", produces = "application/json")
-    public ResponseEntity<Map<String, Object>> triggerRideOrderFlow(@RequestBody OrderRequest orderRequest) {
-        log.info("Starting ride order flow for: {}", orderRequest);
-        return ResponseEntity.ok(workflowService.startFoodDeliveryWorkflow(orderRequest));
+    public ResponseEntity<Map<String, Object>> triggerFoodDeliveryFlow(@RequestBody FoodDeliveryRequest foodDeliveryRequest) {
+        return ResponseEntity.ok(workflowService.startFoodDeliveryWorkflow(foodDeliveryRequest));
     }
 }

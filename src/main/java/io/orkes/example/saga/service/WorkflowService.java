@@ -2,7 +2,7 @@ package io.orkes.example.saga.service;
 
 import com.netflix.conductor.common.metadata.workflow.StartWorkflowRequest;
 import io.orkes.conductor.client.WorkflowClient;
-import io.orkes.example.saga.pojos.OrderRequest;
+import io.orkes.example.saga.pojos.FoodDeliveryRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @Slf4j
 @AllArgsConstructor
@@ -20,15 +19,11 @@ public class WorkflowService {
     private final WorkflowClient workflowClient;
     private final Environment environment;
 
-    public Map<String, Object> startFoodDeliveryWorkflow(OrderRequest orderRequest) {
-        UUID uuid = UUID.randomUUID();
-        String orderRequestId = uuid.toString();
-        orderRequest.setOrderRequestId(orderRequestId);
-
+    public Map<String, Object> startFoodDeliveryWorkflow(FoodDeliveryRequest foodDeliveryRequest) {
         StartWorkflowRequest request = new StartWorkflowRequest();
         request.setName("FoodDeliveryWorkflow");
         request.setVersion(1);
-        request.setCorrelationId(orderRequestId);
+        request.setCorrelationId("api-triggered");
 
         String TASK_DOMAIN_PROPERTY = "conductor.worker.all.domain";
         String domain = environment.getProperty(TASK_DOMAIN_PROPERTY, String.class, "");
@@ -40,12 +35,16 @@ public class WorkflowService {
         }
 
         Map<String, Object> inputData = new HashMap<>();
-        inputData.put("customerEmail", orderRequest.getCustomerEmail());
-        inputData.put("customerName", orderRequest.getCustomerName());
-        inputData.put("customerContact", orderRequest.getCustomerContact());
-        inputData.put("restaurantId", orderRequest.getRestaurantId());
-        inputData.put("address", orderRequest.getDeliveryAddress());
-        inputData.put("deliveryInstructions", orderRequest.getDeliveryInstructions());
+        inputData.put("customerEmail", foodDeliveryRequest.getCustomerEmail());
+        inputData.put("customerName", foodDeliveryRequest.getCustomerName());
+        inputData.put("customerContact", foodDeliveryRequest.getCustomerContact());
+        inputData.put("restaurantId", foodDeliveryRequest.getRestaurantId());
+        inputData.put("foodItems", foodDeliveryRequest.getFoodItems());
+        inputData.put("additionalNotes", foodDeliveryRequest.getAdditionalNotes());
+        inputData.put("address", foodDeliveryRequest.getAddress());
+        inputData.put("deliveryInstructions", foodDeliveryRequest.getDeliveryInstructions());
+        inputData.put("paymentAmount", foodDeliveryRequest.getPaymentAmount());
+        inputData.put("paymentMethod", foodDeliveryRequest.getPaymentMethod());
         request.setInput(inputData);
 
         String workflowId = "";

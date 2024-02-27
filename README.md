@@ -32,40 +32,42 @@ We have already setup these workflows with all the necessary permissions. These 
 We can use two approaches:
 1. Call the triggerRideBookingFlow API from within the Application
    ```
-    curl --location 'http://localhost:8081/startFoodDeliveryWorkflow' \
+    curl --location 'http://localhost:8081/triggerFoodDeliveryFlow' \
     --header 'Content-Type: application/json' \
     --data '{
-         "customerId": 1,
-         "address": "350 East 62nd Street, NY 10065",
-         "contact": "+1(605)123-5674",
-         "restaurantId": 2,
-         "foodItems": [
-         {
-            "item": "Chicken with Broccoli",
-            "quantity": 1
-         },
-         {
-            "item": "Veggie Fried Rice",
-            "quantity": 1
-         },
-         {
-            "item": "Egg Drop Soup",
-            "quantity": 2
-         }],
-         "additionalNotes": [
-           "Do not put spice.",
-           "Send cutlery."
-         ],
-         "deliveryInstructions": "Leave at the door!",
-         "paymentAmount": 45.34,
-         "paymentMethod": {
-         "type": "Credit Card",
-         "details": {
-           "number": "1234 4567 3325 1345",
-           "expiry": "05/2025",
-           "cvv": "123"
-         }
-       }
+        "customerEmail": "tester.qa@example.com",
+        "customerName": "Tester QA",
+        "customerContact": "+1(605)123-5674",
+        "address": "350 East 62nd Street, NY 10065",
+        "restaurantId": 2,
+        "foodItems": [
+            {
+                "item": "Chicken with Broccoli",
+                "quantity": 1
+            },
+            {
+                "item": "Veggie Fried Rice",
+                "quantity": 1
+            },
+            {
+                "item": "Egg Drop Soup",
+                "quantity": 2
+            }
+        ],
+        "additionalNotes": [
+            "Do not put spice.",
+            "Send cutlery."
+        ],
+        "paymentMethod" : {
+            "type": "Credit Card",
+            "details": {
+                "number": "1234 4567 3325 1345",
+                "cvv": "123",
+                "expiry": "05/2022"
+            }
+        },
+        "paymentAmount": 45.34,
+        "deliveryInstructions": "Leave at the door!"
      }'
    ```
 2. Directly call the Orkes API for creating a workflow
