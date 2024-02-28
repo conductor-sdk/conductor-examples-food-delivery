@@ -7,7 +7,9 @@ See: https://medium.com/orkes/saga-pattern-in-distributed-systems-f11b9a2221f5 f
 
 ### Environment setup
 1. Install JAVA 17 - https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html
-2. Install sqlite - https://www.tutorialspoint.com/sqlite/sqlite_installation.htm.
+2. Install Gradle - https://gradle.org/install/
+3. Generate Gradle Wrapper - https://www.baeldung.com/gradle-wrapper
+4. Install sqlite - https://www.tutorialspoint.com/sqlite/sqlite_installation.htm.
    If using brew, you can just run ```brew install sqlite```
 
 ### Workflow Setup on Orkes Playground
