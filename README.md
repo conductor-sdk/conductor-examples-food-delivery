@@ -7,8 +7,7 @@ Sample Java Application demonstrating Saga microservice architecture pattern for
 1. Install JAVA 17 - https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html
 2. Install Gradle - https://gradle.org/install/
 3. Generate Gradle Wrapper - https://www.baeldung.com/gradle-wrapper
-4. Install sqlite - https://www.tutorialspoint.com/sqlite/sqlite_installation.htm.
-   If using brew, you can just run ```brew install sqlite```
+4. Install sqlite (Only if necessary, i.e if SQLite JDBC Driver is not installed. If you are on Mac OS X or Linux, then SQLite is normally pre-installed) - https://www.tutorialspoint.com/sqlite/sqlite_installation.htm.
 
 ### Workflow Setup on Orkes Playground
 
